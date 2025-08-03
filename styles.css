@@ -2,91 +2,100 @@
   --accent: #00a6fb;
   --bg: #d6f1ff;
   --font: "Montserrat", sans-serif;
+  --shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+  --radius: 20px;
 }
 
 body {
   font-family: var(--font);
-  background: #f5f7fa;
-  padding: 20px;
+  background: #f5faff;
   margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .container {
-  max-width: 600px;
-  margin: 0 auto;
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  background: white;
+  padding: 40px 30px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin: 40px auto;
+  max-width: 500px;
+  width: 100%;
 }
 
 h1 {
-  text-align: center;
   color: #0077c2;
+  text-align: center;
+  font-size: 1.8rem;
   margin-bottom: 30px;
-  font-size: 1.8em;
 }
 
 .input-group {
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
+  margin-bottom: 18px;
 }
 
 .input-group label {
   font-weight: 500;
-  margin-bottom: 5px;
-  color: #003f5c;
+  margin-bottom: 8px;
 }
 
 .input-group input,
 .input-group select {
   background-color: var(--bg);
-  border-radius: 10px;
+  border-radius: 12px;
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline-offset: 0px;
   font-family: var(--font);
-  padding: 10px 12px;
+  padding: 10px 12.5px;
   border: none;
-  width: 300px;
+  width: 100%;
   transition: all 0.2s ease;
-}
-
-.input-group input:hover,
-.input-group select:hover {
-  background-color: #ffffff;
+  font-size: 14px;
 }
 
 .input-group input:focus,
 .input-group select:focus {
-  outline-offset: -6px;
-  background-color: var(--bg);
+  background: white;
+  outline-offset: 2px;
 }
 
-button.boton-estilo {
+button,
+.boton-estilo {
   font-family: var(--font);
-  padding: 10px 20px;
-  background-color: var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 20px;
+  background: linear-gradient(to right, #00a6fb, #0077c2);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  margin-top: 10px;
+  width: 100%;
+  margin-top: 20px;
 }
 
-button.boton-estilo:hover {
-  background-color: #0081c6;
+button:hover,
+.boton-estilo:hover {
+  filter: brightness(1.1);
 }
 
 #output {
-  margin-top: 20px;
+  margin-top: 25px;
   font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .recomendacion {
-  background-color: #ffffff;
+  background: #ffffff;
   border: 1px solid #ccc;
   padding: 15px;
   margin-top: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
 }
