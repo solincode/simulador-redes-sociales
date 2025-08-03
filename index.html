@@ -3,72 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <title>Simulador de Crecimiento en Redes Sociales</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles-unificado.css" />
 </head>
 <body>
-  <h2> Simulador de Crecimiento en Redes Sociales</h2>
+  <div class="container">
+    <h1>Simulador de Crecimiento en Redes Sociales</h1>
 
-  <div class="custom-box">
-    <label>Red social:</label><br>
-    <select id="red_social">
-      <option>Instagram</option>
-      <option>Facebook</option>
-      <option>TikTok</option>
-    </select>
+    <div class="input-group">
+      <label>Red social:</label>
+      <select id="red_social">
+        <option>Instagram</option>
+        <option>Facebook</option>
+        <option>TikTok</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label for="seguidores">Seguidores actuales:</label>
+      <input id="seguidores" type="number" value="1000">
+    </div>
+
+    <div class="input-group">
+      <label for="alcance">Alcance promedio semanal:</label>
+      <input id="alcance" type="number" value="5000">
+    </div>
+
+    <div class="input-group">
+      <label for="publicaciones">Publicaciones por semana:</label>
+      <input id="publicaciones" type="number" value="4">
+    </div>
+
+    <div class="input-group">
+      <label for="likes">Likes por semana:</label>
+      <input id="likes" type="number" value="300">
+    </div>
+
+    <div class="input-group">
+      <label for="comentarios">Comentarios por semana:</label>
+      <input id="comentarios" type="number" value="50">
+    </div>
+
+    <div class="input-group">
+      <label for="guardados">Guardados por semana:</label>
+      <input id="guardados" type="number" value="80">
+    </div>
+
+    <div class="input-group">
+      <label for="tipo">Tipo de contenido:</label>
+      <select id="tipo">
+        <option>Reels</option>
+        <option>Carruseles</option>
+        <option>Historias</option>
+        <option>Videos</option>
+        <option>Imágenes</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label for="nicho">Nicho o temática:</label>
+      <select id="nicho">
+        <option>Educativo</option>
+        <option>Producto/servicio</option>
+        <option>Empresa</option>
+      </select>
+    </div>
+
+    <button id="btn-calcular" class="boton-estilo">Calcular crecimiento</button>
+
+    <div id="output"></div>
   </div>
-
-  <div class="custom-box">
-    <label for="seguidores">Seguidores actuales:</label><br>
-    <input id="seguidores" type="number" value="1000">
-  </div>
-
-  <div class="custom-box">
-    <label for="alcance">Alcance promedio semanal:</label><br>
-    <input id="alcance" type="number" value="5000">
-  </div>
-
-  <div class="custom-box">
-    <label for="publicaciones">Publicaciones por semana:</label><br>
-    <input id="publicaciones" type="number" value="4">
-  </div>
-
-  <div class="custom-box">
-    <label for="likes">Likes por semana:</label><br>
-    <input id="likes" type="number" value="300">
-  </div>
-
-  <div class="custom-box">
-    <label for="comentarios">Comentarios por semana:</label><br>
-    <input id="comentarios" type="number" value="50">
-  </div>
-
-  <div class="custom-box">
-    <label for="guardados">Guardados por semana:</label><br>
-    <input id="guardados" type="number" value="80">
-  </div>
-
-  <div class="custom-box">
-    <label for="tipo">Tipo de contenido:</label><br>
-    <select id="tipo">
-      <option>Reels</option>
-      <option>Carruseles</option>
-      <option>Historias</option>
-      <option>Videos</option>
-      <option>Imágenes</option>
-    </select>
-  </div>
-
-  <div class="custom-box">
-    <label for="nicho">Nicho o temática:</label><br>
-    <select id="nicho">
-      <option>Educativo</option>
-      <option>Producto/servicio</option>
-      <option>Empresa</option>
-    </select>
-  </div>
-
-  <button id="btn-calcular">Calcular crecimiento</button>
-  <div id="output"></div>
 
   <script src="script.js"></script>
 </body>
