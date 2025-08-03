@@ -2,245 +2,75 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulador de Rentabilidad</title>
-  <style>
-    body {
-      font-family: "Montserrat", sans-serif;
-      background: #f7fbff;
-      margin: 0;
-      padding: 2rem;
-      color: #333;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      text-align: center;
-      color: #0072ff;
-    }
-
-    .input-group label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 500;
-    }
-
-    .input-group input[type="number"],
-    .input-group select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 0.25rem;
-      border-radius: 10px;
-      border: 2px solid #00a6fb;
-      background-color: #d6f1ff;
-      font-size: 1rem;
-    }
-
-    .input-group input[type="range"] {
-      width: 100%;
-      margin-top: 0.5rem;
-      background: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
-      border-radius: 5px;
-      height: 10px;
-      appearance: none;
-    }
-
-    .input-group input[type="range"]::-webkit-slider-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background-image: linear-gradient(160deg, #4900f5 0%, #80D0C7 100%);
-      cursor: pointer;
-      appearance: none;
-      margin-top: -5px;
-    }
-
-    .boton-estilo {
-      padding: 1rem 2rem;
-      margin-top: 2rem;
-      display: inline-block;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 0.5rem;
-      background: linear-gradient(to bottom right, #00c6ff, #0072ff);
-      color: white;
-      border: none;
-      cursor: pointer;
-      text-align: center;
-      width: 100%;
-      transition: all 0.3s ease-in-out;
-    }
-
-    .boton-estilo:hover {
-      background: linear-gradient(to bottom right, #0072ff, #00c6ff);
-      transform: translateY(-2px);
-    }
-
-    #resultado {
-      margin-top: 2rem;
-    }
-  </style>
+  <title>Simulador de Crecimiento en Redes Sociales</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Simulador de Rentabilidad</h1>
+  <h2>📈 Simulador de Crecimiento en Redes Sociales</h2>
 
-    <div class="input-group">
-      <label for="renta">Renta:</label>
-      <input type="number" id="renta" />
-
-      <label for="servicios">Servicios:</label>
-      <input type="number" id="servicios" />
-
-      <label for="permisos">Permisos:</label>
-      <input type="number" id="permisos" />
-
-      <label for="sueldos">Sueldos:</label>
-      <input type="number" id="sueldos" />
-
-      <label for="impuestos">Impuestos:</label>
-      <input type="number" id="impuestos" />
-
-      <label for="insumos">Insumos:</label>
-      <input type="number" id="insumos" />
-
-      <label for="mantencion">Mantención:</label>
-      <input type="number" id="mantencion" />
-
-      <label for="empaquetado">Empaquetado:</label>
-      <input type="number" id="empaquetado" />
-
-      <label for="capacitacion">Capacitación:</label>
-      <input type="number" id="capacitacion" />
-
-      <label for="produccion">Producción mensual:</label>
-      <input type="number" id="produccion" />
-
-      <label for="promo_unitario">Promoción unidad:</label>
-      <input type="number" id="promo_unitario" />
-
-      <label for="roi_deseado">ROI deseado (%): <span id="roi_val">30%</span></label>
-      <input type="range" id="roi_deseado" min="0" max="200" value="30" />
-
-      <label for="descuento">Descuento (%): <span id="descuento_val">20%</span></label>
-      <input type="range" id="descuento" min="0" max="100" value="20" />
-
-      <label>
-        <input type="checkbox" id="usar_escenario" />
-        ¿Usar escenario adicional?
-      </label>
-
-      <div id="escenario_box" style="display: none;">
-        <label for="escenario_tipo">Tipo escenario:</label>
-        <select id="escenario_tipo">
-          <option value="2x1">2x1</option>
-          <option value="2desc">Segundo producto con descuento</option>
-        </select>
-
-        <label for="escenario_descuento">Descuento 2° producto (%): <span id="escenario_descuento_val">50%</span></label>
-        <input type="range" id="escenario_descuento" min="0" max="100" value="50" />
-      </div>
-
-      <button class="boton-estilo" onclick="calcularRentabilidad()">Calcular rentabilidad</button>
-    </div>
-
-    <div id="resultado"></div>
+  <div class="custom-box">
+    <label>Red social:</label><br>
+    <select id="red_social">
+      <option>Instagram</option>
+      <option>Facebook</option>
+      <option>TikTok</option>
+    </select>
   </div>
 
-  <script>
-    window.onload = function () {
-      const roiSlider = document.getElementById("roi_deseado");
-      const descuentoSlider = document.getElementById("descuento");
-      const escenarioDescSlider = document.getElementById("escenario_descuento");
+  <div class="custom-box">
+    <label for="seguidores">Seguidores actuales:</label><br>
+    <input id="seguidores" type="number" value="1000">
+  </div>
 
-      roiSlider.oninput = () =>
-        document.getElementById("roi_val").innerText = roiSlider.value + "%";
-      descuentoSlider.oninput = () =>
-        document.getElementById("descuento_val").innerText = descuentoSlider.value + "%";
-      escenarioDescSlider.oninput = () =>
-        document.getElementById("escenario_descuento_val").innerText = escenarioDescSlider.value + "%";
+  <div class="custom-box">
+    <label for="alcance">Alcance promedio semanal:</label><br>
+    <input id="alcance" type="number" value="5000">
+  </div>
 
-      document.getElementById("usar_escenario").onchange = function () {
-        document.getElementById("escenario_box").style.display = this.checked ? "block" : "none";
-      };
-    };
+  <div class="custom-box">
+    <label for="publicaciones">Publicaciones por semana:</label><br>
+    <input id="publicaciones" type="number" value="4">
+  </div>
 
-    function calcularRentabilidad() {
-      const get = id => parseFloat(document.getElementById(id).value) || 0;
+  <div class="custom-box">
+    <label for="likes">Likes por semana:</label><br>
+    <input id="likes" type="number" value="300">
+  </div>
 
-      const datos = {
-        renta: get("renta"),
-        servicios: get("servicios"),
-        permisos: get("permisos"),
-        sueldos: get("sueldos"),
-        impuestos: get("impuestos"),
-        insumos: get("insumos"),
-        mantencion: get("mantencion"),
-        empaquetado: get("empaquetado"),
-        capacitacion: get("capacitacion"),
-        produccion: get("produccion"),
-        promo: get("promo_unitario"),
-        roi: get("roi_deseado") / 100,
-        desc: get("descuento") / 100,
-        usarEsc: document.getElementById("usar_escenario").checked,
-        tipoEsc: document.getElementById("escenario_tipo").value,
-        desc2p: get("escenario_descuento") / 100
-      };
+  <div class="custom-box">
+    <label for="comentarios">Comentarios por semana:</label><br>
+    <input id="comentarios" type="number" value="50">
+  </div>
 
-      const gastosFijos = datos.renta + datos.servicios + datos.permisos + datos.sueldos + datos.impuestos;
-      const costosVar = datos.insumos + datos.mantencion + datos.empaquetado + datos.capacitacion;
-      const costoUnit = (gastosFijos + costosVar) / datos.produccion;
-      const costoTotal = costoUnit + datos.promo;
-      const precioNormal = costoTotal * (1 + datos.roi);
-      const precioConDescuento = precioNormal * (1 - datos.desc);
+  <div class="custom-box">
+    <label for="guardados">Guardados por semana:</label><br>
+    <input id="guardados" type="number" value="80">
+  </div>
 
-      let escenarios = [
-        { nombre: "Precio normal", precio: precioNormal },
-        { nombre: `Con ${Math.round(datos.desc * 100)}% de descuento`, precio: precioConDescuento }
-      ];
+  <div class="custom-box">
+    <label for="tipo">Tipo de contenido:</label><br>
+    <select id="tipo">
+      <option>Reels</option>
+      <option>Carruseles</option>
+      <option>Historias</option>
+      <option>Videos</option>
+      <option>Imágenes</option>
+    </select>
+  </div>
 
-      if (datos.usarEsc) {
-        if (datos.tipoEsc === "2x1") {
-          escenarios.push({ nombre: "2x1", precio: precioNormal / 2 });
-        } else {
-          const precioProm = (precioNormal + (precioNormal * (1 - datos.desc2p))) / 2;
-          escenarios.push({ nombre: `2° producto con ${Math.round(datos.desc2p * 100)}% off`, precio: precioProm });
-        }
-      }
+  <div class="custom-box">
+    <label for="nicho">Nicho o temática:</label><br>
+    <select id="nicho">
+      <option>Educativo</option>
+      <option>Producto/servicio</option>
+      <option>Empresa</option>
+    </select>
+  </div>
 
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = "<h2>Resultados</h2>";
+  <button id="btn-calcular">Calcular crecimiento</button>
+  <div id="output"></div>
 
-      escenarios.forEach(esc => {
-        const margen = esc.precio - costoTotal;
-        const rentable = margen > 0;
-        const color = rentable ? "#d4edda" : "#f8d7da";
-        const texto = rentable
-          ? `Rentable: +$${margen.toFixed(2)}`
-          : margen === 0
-            ? "Punto de equilibrio"
-            : `Pierdes: -$${Math.abs(margen).toFixed(2)}`;
-
-        resultado.innerHTML += `
-          <div style="background:${color};border-radius:10px;padding:1rem;margin-bottom:1rem">
-            <strong>${esc.nombre}</strong><br />
-            Precio: $${esc.precio.toFixed(2)}<br />
-            Costo: $${costoTotal.toFixed(2)}<br />
-            Margen: $${margen.toFixed(2)}<br />
-            ${texto}
-          </div>
-        `;
-      });
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
 

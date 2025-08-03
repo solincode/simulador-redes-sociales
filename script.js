@@ -1,85 +1,70 @@
-window.onload = function () {
-  const roiSlider = document.getElementById("roi_deseado");
-  const descuentoSlider = document.getElementById("descuento");
-  const escenarioDescSlider = document.getElementById("escenario_descuento");
+function clamp_pct(val) {
+  return Math.max(0, Math.min(val, 100));
+}
 
-  roiSlider.oninput = () =>
-    document.getElementById("roi_val").innerText = roiSlider.value + "%";
-  descuentoSlider.oninput = () =>
-    document.getElementById("descuento_val").innerText = descuentoSlider.value + "%";
-  escenarioDescSlider.oninput = () =>
-    document.getElementById("escenario_descuento_val").innerText = escenarioDescSlider.value + "%";
-
-  document.getElementById("usar_escenario").onchange = function () {
-    document.getElementById("escenario_box").style.display = this.checked ? "block" : "none";
+function sugerir_mix(red) {
+  const mixes = {
+    Instagram: "70% Reels, 20% Carruseles, 10% Historias",
+    Facebook: "60% Videos, 30% Posts con enlaces, 10% Imágenes",
+    TikTok: "80% Videos cortos, 15% Videos largos, 5% Historias"
   };
+  return mixes[red] || "Usa una combinación variada de formatos";
+}
 
-  window.calcularRentabilidad = function () {
-    const get = id => parseFloat(document.getElementById(id).value) || 0;
-
-    const datos = {
-      renta: get("renta"),
-      servicios: get("servicios"),
-      permisos: get("permisos"),
-      sueldos: get("sueldos"),
-      impuestos: get("impuestos"),
-      insumos: get("insumos"),
-      mantencion: get("mantencion"),
-      empaquetado: get("empaquetado"),
-      capacitacion: get("capacitacion"),
-      produccion: get("produccion"),
-      promo: get("promo_unitario"),
-      roi: get("roi_deseado") / 100,
-      desc: get("descuento") / 100,
-      usarEsc: document.getElementById("usar_escenario").checked,
-      tipoEsc: document.getElementById("escenario_tipo").value,
-      desc2p: get("escenario_descuento") / 100
-    };
-
-    const gastosFijos = datos.renta + datos.servicios + datos.permisos + datos.sueldos + datos.impuestos;
-    const costosVar = datos.insumos + datos.mantencion + datos.empaquetado + datos.capacitacion;
-    const costoUnit = (gastosFijos + costosVar) / datos.produccion;
-    const costoTotal = costoUnit + datos.promo;
-    const precioNormal = costoTotal * (1 + datos.roi);
-    const precioConDescuento = precioNormal * (1 - datos.desc);
-
-    let escenarios = [
-      { nombre: "Precio normal", precio: precioNormal },
-      { nombre: `Con ${Math.round(datos.desc * 100)}% de descuento`, precio: precioConDescuento }
-    ];
-
-    if (datos.usarEsc) {
-      if (datos.tipoEsc === "2x1") {
-        escenarios.push({ nombre: "2x1", precio: precioNormal / 2 });
-      } else {
-        const precioProm = (precioNormal + (precioNormal * (1 - datos.desc2p))) / 2;
-        escenarios.push({ nombre: `2° producto con ${Math.round(datos.desc2p * 100)}% off`, precio: precioProm });
-      }
+function recomendaciones_por_nicho(nicho, red) {
+  const base = {
+    Educativo: {
+      Instagram: "Publica carruseles explicativos y Reels con tips. Aprovecha los guardados.",
+      Facebook: "Crea posts largos con contenido útil y enlaces. Haz lives explicativos.",
+      TikTok: "Enseña con humor o ejemplos rápidos. Usa subtítulos y voz en off."
+    },
+    "Producto/servicio": {
+      Instagram: "Muestra beneficios del producto con Reels. Usa historias con stickers interactivos.",
+      Facebook: "Haz promociones y publicaciones con llamadas a la acción. Muestra reseñas.",
+      TikTok: "Haz videos con el producto en uso. Usa música viral."
+    },
+    Empresa: {
+      Instagram: "Muestra el equipo y cultura laboral. Publica hitos en historias destacadas.",
+      Facebook: "Comparte noticias, artículos, logros y enlaces al sitio web.",
+      TikTok: "Haz videos mostrando procesos internos o testimonios."
     }
-
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = "<h2>Resultados</h2>";
-
-    escenarios.forEach(esc => {
-      const margen = esc.precio - costoTotal;
-      const rentable = margen > 0;
-      const color = rentable ? "#d4edda" : "#f8d7da";
-      const texto = rentable
-        ? `Rentable: +$${margen.toFixed(2)}`
-        : margen === 0
-          ? "Punto de equilibrio"
-          : `Pierdes: -$${Math.abs(margen).toFixed(2)}`;
-
-      resultado.innerHTML += `
-        <div style="border-radius:10px;padding:1rem;margin-bottom:1rem;background:${color}">
-          <strong>${esc.nombre}</strong><br />
-          Precio: $${esc.precio.toFixed(2)}<br />
-          Costo: $${costoTotal.toFixed(2)}<br />
-          Margen: $${margen.toFixed(2)}<br />
-          ${texto}
-        </div>
-      `;
-    });
   };
-};
+  return base[nicho]?.[red] || "Usa formatos variados y analiza el desempeño cada semana.";
+}
+
+document.getElementById("btn-calcular").addEventListener("click", () => {
+  const red = document.getElementById("red_social").value;
+  const seguidores = parseInt(document.getElementById("seguidores").value);
+  const alcance = parseInt(document.getElementById("alcance").value);
+  const publicaciones = parseInt(document.getElementById("publicaciones").value);
+  const likes = parseInt(document.getElementById("likes").value);
+  const comentarios = parseInt(document.getElementById("comentarios").value);
+  const guardados = parseInt(document.getElementById("guardados").value);
+  const tipo = document.getElementById("tipo").value;
+  const nicho = document.getElementById("nicho").value;
+
+  const output = document.getElementById("output");
+  output.innerHTML = "";
+
+  if (alcance <= 0 || publicaciones <= 0 || seguidores <= 0) {
+    output.innerHTML = "<p style='color:red;'>Por favor ingresa valores válidos mayores que cero para alcance, publicaciones y seguidores.</p>";
+    return;
+  }
+
+  const er = clamp_pct(((likes + comentarios + guardados) / alcance) * 100);
+  const seguidores_nuevos = Math.round((alcance * (er / 100)) * 0.1);
+  const crecimiento_pct = clamp_pct((seguidores_nuevos / seguidores) * 100);
+  const recomendaciones = recomendaciones_por_nicho(nicho, red);
+  const mix = sugerir_mix(red);
+
+  output.innerHTML = `
+    <div class="recomendacion">
+      <p><strong>Engagement Rate (ER):</strong> ${er.toFixed(2)}%</p>
+      <p><strong>Seguidores nuevos estimados:</strong> ${seguidores_nuevos}</p>
+      <p><strong>Crecimiento estimado:</strong> ${crecimiento_pct.toFixed(2)}%</p>
+      <p><strong>Mix de formatos sugerido:</strong> ${mix}</p>
+      <p><strong>Recomendación personalizada:</strong> ${recomendaciones}</p>
+    </div>
+  `;
+});
 

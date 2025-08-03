@@ -1,5 +1,6 @@
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
+  background: #f5f7fa;
   padding: 20px;
 }
 
@@ -7,44 +8,58 @@ h2 {
   color: #0077c2;
 }
 
-.custom-box > input,
-.custom-box > select {
+.custom-box {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.custom-box input,
+.custom-box select {
   background-color: #d6f1ff;
   border-radius: 10px;
   outline: 2px solid #00a6fb;
   outline-offset: 3px;
+  font-family: Montserrat, sans-serif;
   padding: 10px 12.5px;
   border: none;
-  margin-bottom: 15px;
   width: 300px;
+  transition: all 0.2s ease;
 }
 
-.custom-box > input:hover,
-.custom-box > select:hover {
-  background-color: #fff;
+.custom-box input:hover,
+.custom-box select:hover {
+  background: #fff;
 }
 
-.custom-box > input:focus,
-.custom-box > select:focus {
+.custom-box input:focus,
+.custom-box select:focus {
   outline-offset: -6px;
-  background-color: #d6f1ff;
+  background: #d6f1ff;
 }
 
-#btnCalcular {
-  margin-top: 10px;
+button {
+  font-family: Montserrat, sans-serif;
   padding: 10px 20px;
-  background-color: #00a6fb;
-  color: #fff;
+  background: #00a6fb;
+  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-#output > .result-box {
-  font-family: 'Montserrat', sans-serif;
-  padding: 25px 30px;
-  max-width: 650px;
-  border-radius: 18px;
-  margin-top: 20px;
+button:hover {
+  background: #0081c6;
 }
 
+#output {
+  margin-top: 20px;
+  font-family: Montserrat, sans-serif;
+}
+
+.recomendacion {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
