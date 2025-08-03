@@ -4,52 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulador de Crecimiento en Redes Sociales</title>
-  <link rel="stylesheet" href="styles-unificado.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <h1>Simulador de Crecimiento en Redes Sociales</h1>
 
     <div class="input-group">
-      <label for="red_social">Red social:</label>
+      <label>Red social:</label>
       <select id="red_social">
         <option>Instagram</option>
         <option>Facebook</option>
         <option>TikTok</option>
       </select>
-    </div>
 
-    <div class="input-group">
       <label for="seguidores">Seguidores actuales:</label>
       <input id="seguidores" type="number" value="1000">
-    </div>
 
-    <div class="input-group">
       <label for="alcance">Alcance promedio semanal:</label>
       <input id="alcance" type="number" value="5000">
-    </div>
 
-    <div class="input-group">
       <label for="publicaciones">Publicaciones por semana:</label>
       <input id="publicaciones" type="number" value="4">
-    </div>
 
-    <div class="input-group">
       <label for="likes">Likes por semana:</label>
       <input id="likes" type="number" value="300">
-    </div>
 
-    <div class="input-group">
       <label for="comentarios">Comentarios por semana:</label>
       <input id="comentarios" type="number" value="50">
-    </div>
 
-    <div class="input-group">
       <label for="guardados">Guardados por semana:</label>
       <input id="guardados" type="number" value="80">
-    </div>
 
-    <div class="input-group">
       <label for="tipo">Tipo de contenido:</label>
       <select id="tipo">
         <option>Reels</option>
@@ -58,20 +44,17 @@
         <option>Videos</option>
         <option>Imágenes</option>
       </select>
-    </div>
 
-    <div class="input-group">
       <label for="nicho">Nicho o temática:</label>
       <select id="nicho">
         <option>Educativo</option>
         <option>Producto/servicio</option>
         <option>Empresa</option>
       </select>
+
+      <button id="btn-calcular" class="boton-estilo">Calcular crecimiento</button>
     </div>
 
-    <button id="btn-calcular" class="boton-estilo">Calcular crecimiento</button>
-
-    <!-- CORREGIDO -->
     <div id="output"></div>
   </div>
 
