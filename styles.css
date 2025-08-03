@@ -28,6 +28,11 @@ h1 {
   margin-bottom: 2rem;
 }
 
+/* Grupo de inputs */
+.input-group {
+  margin-bottom: 1rem;
+}
+
 /* Etiquetas */
 label {
   display: block;
@@ -79,10 +84,31 @@ button:hover {
   transform: translateY(-2px);
 }
 
+/* Resultado */
+#output {
+  margin-top: 2rem;
+  background: #eaf6ff;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border-left: 5px solid var(--accent);
+}
+
+/* Oculto */
 .oculto {
   display: none !important;
 }
 
-#resultado {
-  margin-top: 2rem;
+/* Responsive */
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  input, select, button {
+    font-size: 0.95rem;
+  }
 }
