@@ -1,59 +1,68 @@
 body {
   font-family: "Montserrat", sans-serif;
-  background: #f5f7fa;
-  padding: 20px;
+  background: #f7fbff;
+  margin: 0;
+  padding: 2rem;
+  color: #333;
 }
 
-h2 {
-  color: #0077c2;
-}
-
-.custom-box {
-  display: block;
-  margin-bottom: 15px;
-}
-
-.custom-box input,
-.custom-box select {
-  background-color: #d6f1ff;
-  border-radius: 10px;
-  outline: 2px solid #00a6fb;
-  outline-offset: 3px;
-  font-family: Montserrat, sans-serif;
-  padding: 10px 12.5px;
-  border: none;
-  width: 300px;
-  transition: all 0.2s ease;
-}
-
-.custom-box input:hover,
-.custom-box select:hover {
+.container {
+  max-width: 800px;
+  margin: auto;
   background: #fff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
-.custom-box input:focus,
-.custom-box select:focus {
-  outline-offset: -6px;
-  background: #d6f1ff;
+h1 {
+  text-align: center;
+  color: #0072ff;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 2rem;
 }
 
-button {
-  font-family: Montserrat, sans-serif;
-  padding: 10px 20px;
-  background: #00a6fb;
+.input-group label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.input-group input[type="number"],
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 0.25rem;
+  border-radius: 10px;
+  border: 2px solid #00a6fb;
+  background-color: #d6f1ff;
+  font-size: 1rem;
+}
+
+.boton-estilo {
+  padding: 1rem 2rem;
+  margin-top: 2rem;
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background: linear-gradient(to bottom right, #00c6ff, #0072ff);
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
+  text-align: center;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
 }
 
-button:hover {
-  background: #0081c6;
+.boton-estilo:hover {
+  background: linear-gradient(to bottom right, #0072ff, #00c6ff);
+  transform: translateY(-2px);
 }
 
 #output {
-  margin-top: 20px;
-  font-family: Montserrat, sans-serif;
+  margin-top: 2rem;
 }
 
 .recomendacion {
