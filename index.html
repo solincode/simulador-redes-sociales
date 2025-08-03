@@ -1,48 +1,435 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulador Redes Sociales</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>Simulador de Crecimiento en Redes Sociales</title>
+  <style>
+    body { font-family: "Montserrat", sans-serif; background: #f5f7fa; padding: 20px; }
+    h2 { color: #0077c2; }
+    .custom-box { display: block; margin-bottom: 15px; }
+    .custom-box input, .custom-box select {
+      background-color: #d6f1ff;
+      border-radius: 10px;
+      outline: 2px solid #00a6fb;
+      outline-offset: 3px;
+      font-family: Montserrat, sans-serif;
+      padding: 10px 12.5px;
+      border: none;
+      width: 300px;
+      transition: all 0.2s ease;
+    }
+    .custom-box input:hover, .custom-box select:hover { background: #fff; }
+    .custom-box input:focus, .custom-box select:focus {
+      outline-offset: -6px;
+      background: #d6f1ff;
+    }
+    #contenedor-dinamico { margin-top: 10px; }
+    button { font-family: Montserrat, sans-serif; padding: 10px 20px; background: #00a6fb; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0081c6; }
+    .output-box { max-width: 650px; margin-top: 20px; padding: 25px 30px; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+    .insta { background: linear-gradient(135deg, #f8faff, #ffffff); border: 2px solid #dd2a7b; }
+    .fb { background: linear-gradient(135deg, #eef5ff, #ffffff); border: 2px solid #1877f2; }
+    .tt { background: linear-gradient(135deg, #fef9ff, #ffffff); border: 2px solid #ee1d52; }
+    .output-box h3 { margin-top: 0; }
+  </style>
 </head>
 <body>
-  <h2>Simulador de Crecimiento en Redes Sociales</h2>
-
+  <h2>📈 Simulador de Crecimiento en Redes Sociales</h2>
   <div class="custom-box">
-    <label for="red">Selecciona la red social:</label>
-    <select id="red">
-      <option value="instagram">Instagram</option>
-      <option value="facebook">Facebook</option>
-      <option value="tiktok">TikTok</option>
+    <label>Red social:</label><br>
+    <select id="red_social">
+      <option>Instagram</option>
+      <option>Facebook</option>
+      <option>TikTok</option>
     </select>
   </div>
+  <div id="contenedor-dinamico"></div>
+  <button id="btn-calcular">Calcular crecimiento</button>
+  <div id="output"></div>
 
-  <div class="custom-box">
-    <label for="seguidores">Seguidores actuales:</label>
-    <input type="number" id="seguidores" placeholder="Ej: 1000" />
-  </div>
+  <script>
+  // Constantes
+  const ER_CAP = 15;
+  const MIN_REACH_POST = 500;
+  const IG_ER_PROM = 0.65;
+  const FB_ER_LOW = 0.03, FB_ER_MID = 0.08, FB_ER_HIGH = 0.12;
 
-  <div class="custom-box">
-    <label for="publicaciones">Publicaciones semanales:</label>
-    <input type="number" id="publicaciones" placeholder="Ej: 3" />
-  </div>
+  const RECOM_X_NICHO = {
+    educativo: { top:["Carruseles","Reels","Videos cortos"], evitar:["Historias sin CTA"], freq:[3,7],
+      why: "Carruseles/infografías generan muchos guardados; los Reels condensan tips en 60–90 s con alta retención." },
+    empresa: { top:["Videos","Carruseles","Posts con enlaces"], evitar:["Historias sin objetivo","Imágenes sueltas"], freq:[3,6],
+      why: "Videos nativos y subtitulados elevan interacción; los enlaces llevan a recursos o landings." },
+    "producto/servicio": { top:["Reels","Videos","Historias con venta"], evitar:[], freq:[4,7],
+      why: "Short‑form video muestra el uso y convierte rápido; historias sirven para ofertas flash." },
+    "tienda de comida": { top:["Reels","Videos cortos","Historias con promos"], evitar:[], freq:[4,10],
+      why: "El ‘food porn’ en video corto funciona excelente; historias para cupones y urgencia." },
+    influencer: { top:["Reels","Historias","Videos cortos"], evitar:["Posts con mucho texto"], freq:[5,14],
+      why: "Contenido raw y frecuente crea cercanía; narrativas tipo GRWM retienen." },
+    lifestyle: { top:["Reels","Historias","Videos cortos"], evitar:[], freq:[5,10],
+      why: "Storytelling corto impulsa compras impulsivas; la autenticidad pesa más que el pulido." },
+    emprendimiento: { top:["Carruseles","Reels","Historias educativas"], evitar:[], freq:[3,7],
+      why: "Carruseles lideran interacciones; Reels para humanizar procesos del founder." },
+    "salud/bienestar": { top:["Carruseles","Reels educativos","Lives cortos"], evitar:[], freq:[3,6],
+      why: "Listas/checklists generan guardados; lives resuelven dudas en tiempo real." },
+    entretenimiento: { top:["Videos cortos","Reels","Formatos serializados"], evitar:[], freq:[5,14],
+      why: "El ocio se consume en short‑form; series (parte 1/2/3) maximizan retención." }
+  };
 
-  <div class="custom-box">
-    <label for="engagement">Engagement actual (%):</label>
-    <input type="number" id="engagement" placeholder="Ej: 5" />
-  </div>
+  const MIX_FORMATOS = {
+    Instagram: { base:{ Reels:0.45, Carruseles:0.30, Historias:0.20, Imágenes:0.05 } },
+    Facebook: { base:{ Videos:0.35, Imágenes:0.25, "Posts con enlaces":0.20, Historias:0.10, Eventos:0.10 } },
+    TikTok: { base:{ "Videos cortos":0.60, "Videos largos":0.25, Historias:0.10, Carruseles:0.05 } }
+  };
+  const MIX_OVERRIDE_NICHO = {
+    educativo:{Carruseles:0.40, Reels:0.35},
+    empresa:{Videos:0.40, "Posts con enlaces":0.25, Imágenes:0.25},
+    "producto/servicio":{Reels:0.50, Historias:0.25},
+    "tienda de comida":{Reels:0.55, "Videos cortos":0.30},
+    influencer:{Reels:0.55, Historias:0.30},
+    lifestyle:{Reels:0.55, Historias:0.25},
+    emprendimiento:{Carruseles:0.38, Reels:0.32},
+    "salud/bienestar":{Carruseles:0.35, "Reels educativos":0.35},
+    entretenimiento:{ "Videos cortos":0.65, Reels:0.25 }
+  };
 
-  <div class="custom-box">
-    <label for="conversion">Tasa de conversión (%):</label>
-    <input type="number" id="conversion" placeholder="Ej: 2" />
-  </div>
+  function clamp_pct(x){return Math.max(0, Math.min(x,100));}
 
-  <button id="btnCalcular">Calcular crecimiento 📈</button>
+  function recomendaciones_por_nicho(tema, tipo, posts_sem){
+    const d = RECOM_X_NICHO[tema] || null;
+    if(!d) return [];
+    const res = []; const {top, evitar, freq:[lo,hi], why} = d;
+    if(evitar.includes(tipo)) res.push(`${tipo} rinde peor en ${tema}. Úsalo solo con objetivo claro.`);
+    else if(top.includes(tipo)){
+      const pos = top.indexOf(tipo)+1;
+      res.push(`Excelente: ${tipo} es el formato Nº${pos} en ${tema}. Priorízalo.`);
+    } else res.push(`Para ${tema} funcionan mejor: ${top.join(", ")}.`);
+    if(evitar.length) res.push(`No abuses de: ${evitar.join(", ")}.`);
+    if(posts_sem<lo) res.push(`Publicas poco para ${tema}. Recomiendo ${lo}-${hi} posts/sem.`);
+    else if(posts_sem>hi) res.push(`Publicas de más. En ${tema} suele bastar ${lo}-${hi} posts/sem.`);
+    if(why) res.push(why);
+    return res;
+  }
 
-  <div id="output" class="result-box"></div>
+  function sugerir_mix(red, tema, posts_sem, formatos) {
+    let mix = {...MIX_FORMATOS[red].base};
+    const ov = MIX_OVERRIDE_NICHO[tema];
+    if(ov){
+      Object.assign(mix, ov);
+      const tot=Object.values(mix).reduce((a,b)=>a+b,0);
+      for(let k in mix) mix[k]=mix[k]/tot;
+    }
+    let plan={}, rest=posts_sem;
+    const items = Object.entries(mix).sort((a,b)=>b[1]-a[1]);
+    items.forEach(([formato,pct],i)=>{
+      if(!formatos.includes(formato)) return;
+      if(i===items.length-1) plan[formato]=rest;
+      else {
+        const n = Math.round(posts_sem*pct);
+        plan[formato]=n;
+        rest -= n;
+      }
+    });
+    const out = {};
+    for(let k in plan) if(plan[k]>0 && formatos.includes(k)) out[k]=plan[k];
+    return out;
+  }
 
-  <script src="script.js"></script>
+  function pluralize(nombre,n){
+    if(n===1) return {Reels:"Reel",Videos:"Video",Historias:"Historia",Imágenes:"Imagen",Carruseles:"Carrusel",
+      "Posts con enlaces":"Post con enlace","Videos cortos":"Video corto","Videos largos":"Video largo",
+      Eventos:"Evento"}[nombre] || nombre;
+    return nombre==="carrusel"?"Carruseles":nombre;
+  }
+
+  function mix_to_html_list(mix){
+    return Object.entries(mix).map(([k,v])=>`<li>${v} ${pluralize(k,v)}</li>`).join("");
+  }
+
+  function validar_inputs(vals){
+    const errores=[], warns=[];
+    if(vals.alcance<1) errores.push("El alcance debe ser ≥ 1");
+    else if(vals.alcance<100) warns.push("Alcance muy bajo (<100). Métricas poco representativas.");
+    if(vals.er>30) warns.push("ER > 30%. Revisa datos: alcance muy bajo o interacciones mal ingresadas.");
+    return {errores,warns};
+  }
+
+  function crearInput(label,id,type="number",min=null,max=null){
+    const div=document.createElement("div");
+    div.className="custom-box";
+    const l=document.createElement("label"); l.textContent=label;
+    const inp=document.createElement("input");
+    inp.id=id; inp.type=type;
+    if(min!=null) inp.min=min;
+    if(max!=null) inp.max=max;
+    inp.value = type==="number"? (min || 0): "";
+    div.append(l,document.createElement("br"),inp);
+    return div;
+  }
+
+  function actualizar_widgets(){
+    const c = document.getElementById("contenedor-dinamico");
+    c.innerHTML = "";
+    const red = document.getElementById("red_social").value;
+    c.append(crearInput("Seguidores actuales:","seguidores","number",0));
+    c.append(crearInput("Alcance semanal promedio:","alcance","number",0));
+    c.append(crearInput("Posts/semana:","publicaciones","number",0,14));
+    c.append(crearInput("Likes promedio/post:","likes","number",0));
+    c.append(crearInput("Comentarios promedio/post:","comentarios","number",0));
+    c.append(crearInput("Guardados promedio/post:","guardados","number",0));
+    let opciones_tipo;
+    if(red==="Instagram") opciones_tipo=["Reels","Carruseles","Historias","Imágenes"];
+    else if(red==="TikTok") opciones_tipo=["Videos cortos","Videos largos","Historias","Carruseles"];
+    else opciones_tipo=["Videos","Imágenes","Historias","Eventos","Posts con enlaces"];
+    const selTipo = document.createElement("select"); selTipo.id="tipo";
+    opciones_tipo.forEach(o=>{ const opt=document.createElement("option");opt.value=o;opt.textContent=o; selTipo.append(opt);});
+    const divTipo=document.createElement("div"); divTipo.className="custom-box";
+    divTipo.append(document.createElement("label")).querySelector("label").textContent="Tipo de contenido:";
+    divTipo.append(document.createElement("br"), selTipo);
+    c.append(divTipo);
+    const nichoSel = document.createElement("select"); nichoSel.id="nicho";
+    Object.keys(RECOM_X_NICHO).forEach(k=>{
+      const opt=document.createElement("option"); opt.value=k; opt.textContent=k.charAt(0).toUpperCase()+k.slice(1);
+      nichoSel.append(opt);
+    });
+    const divNicho=document.createElement("div"); divNicho.className="custom-box";
+    divNicho.append(document.createElement("label")).querySelector("label").textContent="Nicho:";
+    divNicho.append(document.createElement("br"), nichoSel);
+    c.append(divNicho);
+    if(red==="Instagram"){
+      c.append(crearInput("Compartidos/post (IG opcional):","shares","number",0));
+      c.append(crearInput("DMs/semana (IG opcional):","dms","number",0));
+    }
+  }
+
+  document.getElementById("red_social").addEventListener("change", actualizar_widgets);
+  actualizar_widgets();
+
+  document.getElementById("btn-calcular").onclick = ()=>{
+    const red = document.getElementById("red_social").value;
+    const s = +document.getElementById("seguidores").value;
+    const alcance = +document.getElementById("alcance").value;
+    let publicaciones = +document.getElementById("publicaciones").value; publicaciones = publicaciones||1;
+    const likes = +document.getElementById("likes").value;
+    const comentarios = +document.getElementById("comentarios").value;
+    const guardados = +document.getElementById("guardados").value;
+    const tipo = document.getElementById("tipo").value;
+    const tema = document.getElementById("nicho").value;
+    const shares = red==="Instagram"? +document.getElementById("shares").value:0;
+    const dms = red==="Instagram"? +document.getElementById("dms").value:0;
+
+    const vals = {seguidores:s, alcance, publicaciones, likes, comentarios, guardados, er:0};
+    // cálculo genérico luego en cada rama se sobreescribe er
+    let errores=[], warns=[];
+    // ramas
+    let htmlOut="";
+    if(red==="Instagram"){
+      const alcance_post_real = Math.max(alcance/publicaciones, MIN_REACH_POST);
+      const inter_post = likes+comentarios+guardados;
+      const inter_sem = inter_post*publicaciones;
+      const er_sem = (inter_sem/Math.max(alcance,1))*100;
+      const er_eff = Math.min(er_sem, ER_CAP);
+      const tasa_guardado = clamp_pct((guardados/alcance_post_real*100)||0);
+      const tasa_viralidad = clamp_pct((shares/alcance_post_real*100)||0);
+      const dms_pct = clamp_pct((dms/alcance*100)||0);
+      vals.er=er_sem;
+      ({errores, warns}=validar_inputs(vals));
+      if(errores.length){
+        htmlOut = `<div class="output-box insta"><h3 style="color:#ff4d4f;">Corrige estos errores</h3><ul>${errores.map(e=>`<li>${e}</li>`).join("")}</ul></div>`;
+      } else {
+        const audiencia_nueva = alcance*0.60;
+        let tasa_follow_base = tipo==="Reels"? (er_eff>8?0.015:er_eff>4?0.010:0.004)
+          : tipo==="Carruseles"?0.007 : tipo==="Historias"?0.004 : 0.003;
+        const ajuste = {educativo:1.2,"producto/servicio":1.1,emprendimiento:1.0,empresa:0.95,lifestyle:1.05,influencer:1.15}[tema]||1;
+        let tasa_follow = tasa_follow_base*ajuste;
+        if(publicaciones>7) tasa_follow *=0.75;
+        if(er_sem>0) tasa_follow *= (er_eff/er_sem);
+        const seguidores_nuevos_sem = audiencia_nueva*tasa_follow;
+        const seguidores_nuevos_post = seguidores_nuevos_sem/publicaciones;
+        const seguidores_fin_mes = Math.round(s + seguidores_nuevos_sem*4);
+        const growth_pct = s? ((seguidores_fin_mes - s)/s*100):0;
+        let recomendaciones = [...warns];
+        if(er_eff<0.8) recomendaciones.push(`ER/sem ${er_eff.toFixed(2)}% < prom. IG (~${IG_ER_PROM}%). Mejora hook/valor.`);
+        else if(er_eff<3) recomendaciones.push("ER moderado. Prueba CTAs claros y storytelling emocional.");
+        else if(er_eff>=5) recomendaciones.push("Top (>5%). Escala con colaboraciones o Ads ligeros.");
+        if(er_eff>8 && s<10000) recomendaciones.push("Colabora con nano/microcreadores (ROI alto).");
+        if(tipo==="Reels" && er_eff<3) recomendaciones.push("Reels: gancho fuerte en los primeros 3 segundos.");
+        if(tasa_viralidad>4) recomendaciones.push("Viralidad alta. Duplica ese formato con CTA a compartir.");
+        if(tasa_guardado>=(likes/alcance_post_real*100||0)) recomendaciones.push("Muchos guardados: empaqueta tips en guía/lead magnet.");
+        if(dms_pct>0.5) recomendaciones.push("Muchos DMs: automatiza respuestas, promo exclusiva por DM.");
+        if(growth_pct<3) recomendaciones.push("Crecimiento lento. Aumenta frecuencia o formatos top del nicho.");
+        else if(growth_pct>=15) recomendaciones.push("Creces rápido. Activa remarketing y retos para fidelizar.");
+        recomendaciones = recomendaciones.concat(recomendaciones_por_nicho(tema, tipo, publicaciones));
+        const mix = sugerir_mix("Instagram", tema, publicaciones, ["Reels","Carruseles","Historias","Imágenes"]);
+        const mix_html = `<ul style="margin-top:4px">${mix_to_html_list(mix)}</ul>`;
+        recomendaciones.push(`Mix recomendado:${mix_html}`);
+        if(["producto/servicio","tienda de comida"].includes(tema)) recomendaciones.push("Activa IG Shop/etiquetado de productos.");
+        const cumple = RECOM_X_NICHO[tema].top.includes(tipo)?"Sí":"No";
+        htmlOut = `<div class="output-box insta">
+          <h3>Proyección de Crecimiento en Instagram</h3>
+          <p><strong>ER (semana usado):</strong> ${er_eff.toFixed(2)}% (real calc: ${er_sem.toFixed(2)}%, prom. IG ~${IG_ER_PROM}%)<br>
+             <strong>Tasa de viralidad:</strong> ${tasa_viralidad.toFixed(2)}%<br>
+             <strong>Tasa de guardado:</strong> ${tasa_guardado.toFixed(2)}%<br>
+             <strong>DMs por alcance:</strong> ${dms_pct.toFixed(2)}%<br>
+             <strong>Tasa follow aplicada:</strong> ${(tasa_follow*100).toFixed(2)}%</p>
+          <ul>
+            <li>+${Math.round(seguidores_nuevos_sem).toLocaleString()} seguidores nuevos por semana</li>
+            <li>${seguidores_fin_mes.toLocaleString()} seguidores al final del mes</li>
+            <li>${growth_pct.toFixed(1)}% crecimiento mensual</li>
+            <li>Seguidores nuevos/post: ${Math.round(seguidores_nuevos_post).toLocaleString()}</li>
+          </ul>
+          <p><strong>¿Tu estrategia actual coincide con el estudio del nicho?</strong> ${cumple}</p>
+          <hr>
+          <p><strong>Recomendaciones personalizadas:</strong></p>
+          <ul>${recomendaciones.map(r=>`<li>${r}</li>`).join("")}</ul>
+        </div>`;
+      }
+    }
+    else if(red==="Facebook"){
+      // lógica de Facebook (similar estructura)
+      const total_inter = likes+comentarios+guardados;
+      const alcance_post = Math.max(alcance/publicaciones,1);
+      let engagement_rate = clamp_pct(total_inter*publicaciones/Math.max(alcance,1)*100);
+      vals.er=engagement_rate;
+      ({errores, warns}=validar_inputs(vals));
+      if(errores.length){
+        htmlOut = `<div class="output-box fb"><h3 style="color:#ff4d4f;">Corrige estos errores</h3><ul>${errores.map(e=>`<li>${e}</li>`).join("")}</ul></div>`;
+      } else {
+        const compartidos_estim = total_inter*0.2;
+        const audiencia_nueva = alcance*0.45 + compartidos_estim*5;
+        let tasa_conversion = tipo==="Videos"? (engagement_rate>5?0.010:engagement_rate>2?0.006:0.003)
+          : tipo==="Posts con enlaces"?0.004 : tipo==="Historias"?0.002
+          : tipo==="Eventos"?0.005 : 0.0025;
+        const ajuste = {empresa:1.1,influencer:0.9,emprendimiento:1.0,"tienda de comida":1.3,"producto/servicio":1.2}[tema]||1;
+        tasa_conversion*=ajuste;
+        if(publicaciones>7) tasa_conversion*=0.75;
+        const seguidores_nuevos_sem = audiencia_nueva*tasa_conversion;
+        const seguidores_proyectados_1m = Math.round(s + seguidores_nuevos_sem*4);
+        const growth_pct = s? ((seguidores_proyectados_1m - s)/s*100):0;
+        const tasa_viralidad_fb = clamp_pct(compartidos_estim/alcance_post*100);
+        const tasa_click = engagement_rate>3?0.012: tipo==="Posts con enlaces"?0.007:0;
+        const clics_estim = Math.round(alcance*tasa_click);
+        let retencion = engagement_rate<FB_ER_LOW?0.3: engagement_rate<FB_ER_MID?0.45: engagement_rate<FB_ER_HIGH?0.6:0.75;
+        const seguidores_reales_nuevos = Math.round(seguidores_nuevos_sem*retencion);
+        const seguidores_ads_estim = Math.round(50/0.5);
+        let recomendaciones = [...warns];
+        if(engagement_rate<FB_ER_LOW) recomendaciones.push(`ER ${engagement_rate.toFixed(3)}% (<0.03%). Mejora calidad, evita links solos.`);
+        else if(engagement_rate<FB_ER_MID) recomendaciones.push("Rango medio (0.03–0.08%). Prueba álbumes/video nativo + subtítulos.");
+        else if(engagement_rate>=FB_ER_HIGH) recomendaciones.push("ER alto (>0.12%). Mantén consistencia y fomenta UGC/grupos.");
+        if(publicaciones==0) recomendaciones.push("No estás publicando. Al menos 2 posts/sem.");
+        else if(publicaciones<2) recomendaciones.push("Publica mínimo 3 veces/sem para mantener presencia.");
+        else if(publicaciones>7) recomendaciones.push("Postear diario puede saturar. Calidad > cantidad.");
+        if(tipo==="Videos") recomendaciones.push("Video nativo vertical con audio aumenta conversiones ~12%.");
+        if(tipo==="Imágenes") recomendaciones.push("Álbumes 5–10 fotos → mayor ER (~0.15%).");
+        if(tipo==="Posts con enlaces") recomendaciones.push("Acompaña links con resumen visual.");
+        if(tipo==="Eventos") recomendaciones.push("Usa eventos para urgencia y recordatorios.");
+        if(comentarios<likes*0.05) recomendaciones.push("Incentiva comentarios con preguntas directas/debates.");
+        if(likes<s*0.02) recomendaciones.push("Revisa claridad del mensaje, diseño y horario.");
+        if(engagement_rate>5 && tasa_conversion<0.003) recomendaciones.push("Mucha atención, poca acción: añade CTA claro.");
+        if(["producto/servicio","tienda de comida","empresa"].includes(tema)) recomendaciones.push("Usa Marketplace/Catálogo: 60% descubre productos en FB.");
+        recomendaciones = recomendaciones.concat(recomendaciones_por_nicho(tema, tipo, publicaciones));
+        const mix = sugerir_mix("Facebook", tema, publicaciones, ["Videos","Imágenes","Historias","Eventos","Posts con enlaces"]);
+        const mix_html = `<ul style="margin-top:4px">${mix_to_html_list(mix)}</ul>`;
+        recomendaciones.push(`Mix recomendado:${mix_html}`);
+        const cumple = RECOM_X_NICHO[tema].top.includes(tipo)?"Sí":"No";
+        htmlOut = `<div class="output-box fb">
+          <h3>Proyección de Crecimiento en Facebook</h3>
+          <p><strong>ER (semana):</strong> ${engagement_rate.toFixed(3)}% (mediana ~0.015%, promedio ~0.063%)</p>
+          <ul>
+            <li>+${Math.round(seguidores_nuevos_sem).toLocaleString()} seguidores por semana</li>
+            <li>${seguidores_proyectados_1m.toLocaleString()} seguidores al final del mes</li>
+            <li>${growth_pct.toFixed(1)}% crecimiento mensual</li>
+            <li>Alcance mensual estimado: ${(alcance*4).toLocaleString()}</li>
+            <li>Seguidores nuevos reales (retención): ${seguidores_reales_nuevos}</li>
+            <li>Tasa de conversión aplicada: ${(tasa_conversion*100).toFixed(2)}%</li>
+            <li>Compartidos estimados: ${Math.round(compartidos_estim)}</li>
+            <li>Tasa de viralidad: ${tasa_viralidad_fb.toFixed(2)}%</li>
+            <li>Seguidores por Ads ($50): +${seguidores_ads_estim}</li>
+            <li>Clics estimados: ${clics_estim}</li>
+          </ul>
+          <p><strong>¿Tu estrategia actual coincide con el estudio del nicho?</strong> ${cumple}</p>
+          <hr>
+          <p><strong>Recomendaciones personalizadas:</strong></p>
+          <ul>${recomendaciones.map(r=>`<li>${r}</li>`).join("")}</ul>
+        </div>`;
+      }
+    }
+    else if(red==="TikTok"){
+      // TikTok lógica igual a Python ...
+      const total_inter = likes+comentarios+guardados;
+      const engagement_rate = clamp_pct(total_inter*publicaciones/Math.max(alcance,1)*100);
+      const inter_por_seg = publicaciones>0? total_inter/(publicaciones*15) : 0;
+      const uso_sonido = ["Videos cortos","Videos largos"].includes(tipo);
+      const watch_time = inter_por_seg*7;
+      let retencion_est = clamp_pct(watch_time/15*100)/100;
+      let tasa_viralidad = 0;
+      if(engagement_rate>10) tasa_viralidad+=0.05;
+      if(uso_sonido) tasa_viralidad+=0.03;
+      if(inter_por_seg>1.2) tasa_viralidad+=0.04;
+      tasa_viralidad = clamp_pct(tasa_viralidad*100)/100;
+      let base_conv = 0.002;
+      if(inter_por_seg>1) base_conv+=0.003;
+      else if(inter_por_seg>0.5) base_conv+=0.0015;
+      if(engagement_rate>8) base_conv+=0.002;
+      if(uso_sonido) base_conv+=0.002;
+      if(publicaciones>7) base_conv*=0.85;
+      const ajuste = {"influencer":1.3,"entretenimiento":1.2,"educativo":1.0,"empresa":0.9,"tienda de comida":1.1,"producto/servicio":1.0}[tema]||1;
+      base_conv*=ajuste;
+      vals.er=engagement_rate;
+      ({errores, warns}=validar_inputs(vals));
+      if(errores.length){
+        htmlOut = `<div class="output-box tt"><h3 style="color:#ff4d4f;">Corrige estos errores</h3><ul>${errores.map(e=>`<li>${e}</li>`).join("")}</ul></div>`;
+      } else {
+        const audiencia = alcance*0.7;
+        const seguidores_nuevos_sem = audiencia*base_conv;
+        const seguidores_proyectados = Math.round(s + seguidores_nuevos_sem*4);
+        const growth_pct = s? ((seguidores_proyectados - s)/s*100):0;
+        const alcance_mensual = alcance*4;
+        const eficiencia_val = publicaciones>0? seguidores_nuevos_sem/publicaciones: 0;
+        const ratio = alcance>0? s/alcance: 0;
+        const clics_estim = Math.round(alcance*0.008);
+        let recomendaciones = [...warns];
+        if(publicaciones==0) recomendaciones.push("TikTok premia consistencia. Publica al menos 3 veces por semana.");
+        else if(publicaciones>10) recomendaciones.push("Publicar demasiado puede bajar retención. Prioriza calidad.");
+        if(tipo==="Videos cortos") recomendaciones.push("Videos <15s retienen mejor. Texto en pantalla + ritmo rápido.");
+        if(tipo==="Videos largos") recomendaciones.push("Cuenta historias/tutoriales; mantén curiosidad hasta el final.");
+        if(inter_por_seg<0.3) recomendaciones.push("Mejora ganchos iniciales (primeros 3 s).");
+        if(engagement_rate<2) recomendaciones.push("ER bajo. Revisa hook o nicho demasiado amplio.");
+        if(engagement_rate>10) recomendaciones.push("ER excelente. Aprovecha colaboraciones o retos.");
+        if(base_conv<0.004) recomendaciones.push("Muchas vistas, poca conversión. Termina con 'sígueme para más'.");
+        if(growth_pct>=15) recomendaciones.push("⚡ Creces rápido. Refuerza comunidad (lives/comentarios fijados).");
+        recomendaciones = recomendaciones.concat(recomendaciones_por_nicho(tema, tipo, publicaciones));
+        const mix = sugerir_mix("TikTok", tema, publicaciones, ["Videos cortos","Videos largos","Historias","Carruseles"]);
+        const mix_html = `<ul style="margin-top:4px">${mix_to_html_list(mix)}</ul>`;
+        recomendaciones.push(`Mix recomendado:${mix_html}`);
+        const cumple = RECOM_X_NICHO[tema].top.includes(tipo)?"Sí":"No";
+        htmlOut = `<div class="output-box tt">
+          <h3>Proyección de Crecimiento en TikTok</h3>
+          <p><strong>ER (semana):</strong> ${engagement_rate.toFixed(2)}%<br>
+             <strong>Interacciones por segundo:</strong> ${inter_por_seg.toFixed(2)}<br>
+             <strong>Watch time promedio:</strong> ${watch_time.toFixed(2)} s<br>
+             <strong>Retención estimada:</strong> ${(retencion_est*100).toFixed(1)}%<br>
+             <strong>Tasa de viralidad:</strong> ${(tasa_viralidad*100).toFixed(2)}%<br>
+             <strong>Tasa de conversión aplicada:</strong> ${(base_conv*100).toFixed(2)}%<br>
+             <strong>Ratio seguidores/alcance:</strong> ${ratio.toFixed(3)}<br>
+             <strong>Clics estimados:</strong> ${clics_estim}</p>
+          <ul>
+            <li>+${Math.round(seguidores_nuevos_sem).toLocaleString()} seguidores por semana</li>
+            <li>${seguidores_proyectados.toLocaleString()} seguidores al final del mes</li>
+            <li>${growth_pct.toFixed(1)}% crecimiento mensual</li>
+            <li>Alcance mensual estimado: ${alcance_mensual.toLocaleString()} visualizaciones</li>
+            <li>Eficiencia por video: ${eficiencia_val.toFixed(1)} seguidores</li>
+          </ul>
+          <p><strong>¿Tu estrategia actual coincide con el estudio del nicho?</strong> ${cumple}</p>
+          <hr>
+          <p><strong>Recomendaciones personalizadas:</strong></p>
+          <ul>${recomendaciones.map(r=>`<li>${r}</li>`).join("")}</ul>
+        </div>`;
+      }
+    }
+
+    document.getElementById("output").innerHTML = htmlOut;
+  };
+  </script>
 </body>
 </html>
 
