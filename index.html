@@ -1,43 +1,48 @@
-body {
-  font-family: 'Montserrat', sans-serif;
-  padding: 20px;
-}
-h2 {
-  color: #0077c2;
-}
-.custom-box > input,
-.custom-box > select {
-  background-color: #d6f1ff;
-  border-radius: 10px;
-  outline: 2px solid #00a6fb;
-  outline-offset: 3px;
-  padding: 10px 12.5px;
-  border: none;
-  margin-bottom: 15px;
-  width: 300px;
-}
-.custom-box > input:hover,
-.custom-box > select:hover {
-  background-color: #fff;
-}
-.custom-box > input:focus,
-.custom-box > select:focus {
-  outline-offset: -6px;
-  background-color: #d6f1ff;
-}
-#btnCalcular {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #00a6fb;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-#output > .result-box {
-  font-family: 'Montserrat', sans-serif;
-  padding: 25px 30px;
-  max-width: 650px;
-  border-radius: 18px;
-  margin-top: 20px;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador Redes Sociales</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h2>Simulador de Crecimiento en Redes Sociales</h2>
+
+  <div class="custom-box">
+    <label for="red">Selecciona la red social:</label>
+    <select id="red">
+      <option value="instagram">Instagram</option>
+      <option value="facebook">Facebook</option>
+      <option value="tiktok">TikTok</option>
+    </select>
+  </div>
+
+  <div class="custom-box">
+    <label for="seguidores">Seguidores actuales:</label>
+    <input type="number" id="seguidores" placeholder="Ej: 1000" />
+  </div>
+
+  <div class="custom-box">
+    <label for="publicaciones">Publicaciones semanales:</label>
+    <input type="number" id="publicaciones" placeholder="Ej: 3" />
+  </div>
+
+  <div class="custom-box">
+    <label for="engagement">Engagement actual (%):</label>
+    <input type="number" id="engagement" placeholder="Ej: 5" />
+  </div>
+
+  <div class="custom-box">
+    <label for="conversion">Tasa de conversión (%):</label>
+    <input type="number" id="conversion" placeholder="Ej: 2" />
+  </div>
+
+  <button id="btnCalcular">Calcular crecimiento 📈</button>
+
+  <div id="output" class="result-box"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

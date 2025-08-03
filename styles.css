@@ -2,9 +2,11 @@ body {
   font-family: 'Montserrat', sans-serif;
   padding: 20px;
 }
+
 h2 {
   color: #0077c2;
 }
+
 .custom-box > input,
 .custom-box > select {
   background-color: #d6f1ff;
@@ -16,15 +18,18 @@ h2 {
   margin-bottom: 15px;
   width: 300px;
 }
+
 .custom-box > input:hover,
 .custom-box > select:hover {
   background-color: #fff;
 }
+
 .custom-box > input:focus,
 .custom-box > select:focus {
   outline-offset: -6px;
   background-color: #d6f1ff;
 }
+
 #btnCalcular {
   margin-top: 10px;
   padding: 10px 20px;
@@ -34,6 +39,7 @@ h2 {
   border-radius: 8px;
   cursor: pointer;
 }
+
 #output > .result-box {
   font-family: 'Montserrat', sans-serif;
   padding: 25px 30px;
@@ -41,3 +47,4 @@ h2 {
   border-radius: 18px;
   margin-top: 20px;
 }
+
