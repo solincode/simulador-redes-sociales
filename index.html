@@ -5,10 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulador de Crecimiento en Redes Sociales</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .help-text {
+      font-size: 14px;
+      color: #00a6fb;
+      font-family: "Montserrat", sans-serif;
+      margin-top: 4px;
+      margin-bottom: 15px;
+    }
+
+    .intro-text {
+      font-size: 16px;
+      color: #333;
+      font-family: "Montserrat", sans-serif;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Simulador de Crecimiento en Redes Sociales</h1>
+
+    <p class="intro-text">
+      Este simulador te ayuda a estimar el <strong>crecimiento potencial</strong> de tu cuenta en redes sociales. Ingresa tus métricas semanales y recibe un análisis personalizado para mejorar tu estrategia en Instagram, Facebook o TikTok.
+    </p>
 
     <div class="input-group">
       <label>Red social:</label>
@@ -17,24 +38,31 @@
         <option>Facebook</option>
         <option>TikTok</option>
       </select>
+      <div class="help-text">Selecciona la red que quieres analizar.</div>
 
       <label for="seguidores">Seguidores actuales:</label>
       <input id="seguidores" type="number" value="1000">
+      <div class="help-text">Escribe cuántos seguidores tienes actualmente.</div>
 
       <label for="alcance">Alcance promedio semanal:</label>
       <input id="alcance" type="number" value="5000">
+      <div class="help-text">¿Cuántas personas únicas ven tu contenido cada semana?</div>
 
       <label for="publicaciones">Publicaciones por semana:</label>
       <input id="publicaciones" type="number" value="4">
+      <div class="help-text">¿Cuántas veces publicas por semana (reels, feed o historias)?</div>
 
       <label for="likes">Likes por semana:</label>
       <input id="likes" type="number" value="300">
+      <div class="help-text">Suma total de “me gusta” que recibes cada semana.</div>
 
       <label for="comentarios">Comentarios por semana:</label>
       <input id="comentarios" type="number" value="50">
+      <div class="help-text">Incluye preguntas, respuestas o menciones.</div>
 
       <label for="guardados">Guardados por semana:</label>
       <input id="guardados" type="number" value="80">
+      <div class="help-text">¿Cuántas veces las personas guardan tus publicaciones?</div>
 
       <label for="tipo">Tipo de contenido:</label>
       <select id="tipo">
@@ -44,6 +72,7 @@
         <option>Videos</option>
         <option>Imágenes</option>
       </select>
+      <div class="help-text">Selecciona el formato de contenido que más usas.</div>
 
       <label for="nicho">Nicho o temática:</label>
       <select id="nicho">
@@ -51,6 +80,7 @@
         <option>Producto/servicio</option>
         <option>Empresa</option>
       </select>
+      <div class="help-text">¿De qué trata tu contenido principal?</div>
 
       <button id="btn-calcular" class="boton-estilo">Calcular crecimiento</button>
     </div>
